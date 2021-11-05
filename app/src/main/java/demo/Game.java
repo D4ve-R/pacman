@@ -5,7 +5,6 @@
 package demo;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -19,8 +18,8 @@ import javax.swing.JPanel;
 public class Game extends JPanel implements Runnable{
 
     private Thread thread;
-    private int panelWidth;
-    private int panelHeight;
+    private final int panelWidth;
+    private final int panelHeight;
     private boolean running;
     private boolean loop;
     private int speed = 10;
@@ -37,9 +36,7 @@ public class Game extends JPanel implements Runnable{
 
     /**
      * Constructor method for Game
-     * Calls @see initPanel()
      * Calls @see initVars()
-     * @param d Dimension of parent JFrame
      */
     public Game(){
         panelWidth = 500;
@@ -54,10 +51,10 @@ public class Game extends JPanel implements Runnable{
      * Method to initialize xPos, yPos, dx, dy
      */
     public void initVars(){
-        xPos = panelWidth / 2 - 15;
-        yPos = panelHeight / 2 - 15;
-        dx = 30;
-        dy = 30;
+        xPos = panelWidth / 2 - 25;
+        yPos = panelHeight / 2 - 25;
+        dx = 50;
+        dy = 50;
 
         ghostsX = new int[]{25, panelWidth / 2 + 50 , panelWidth - 2 * dx};
         ghostsY = new int[]{25, panelHeight / 2 + 50, panelHeight - 2 * dy};
@@ -96,6 +93,7 @@ public class Game extends JPanel implements Runnable{
      * will be executed when start() is called
      * implements basic game loop 60 fps
      */
+    @Override
     public void run(){
         long lastTime = System.nanoTime();
         double amountOfTicks = 60.0;
@@ -136,29 +134,19 @@ public class Game extends JPanel implements Runnable{
         stop();
     }
 
-    /**
-     * overridden paintComponent method
-     * @param g Graphics
-     */
-    @Override
-    public void paintComponent(Graphics g){
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        //g2d.setPaint(Color.red);
-        //Rectangle2D rec = new Rectangle(xPos, yPos, dx, dy);
-        //g2d.fill(rec);
-
-        //draw pacman
+    private void drawPacMan(Graphics2D g2d){
         g2d.setPaint(Color.yellow);
         g2d.fillArc(xPos, yPos, dx, dy,bite ? pacmanAngle : (pacmanAngle - 20), bite ? 300 : 340);
+    }
 
-        //draw ghosts
+    private void drawGhosts(Graphics2D g2d){
         g2d.setPaint(Color.white);
         for(int i = 0; i < ghostsX.length; i++){
             g2d.fillRect(ghostsX[i], ghostsY[i], dx, dy);
         }
+    }
 
-        //draw borders
+    private void drawBorders(Graphics2D g2d){
         g2d.setPaint(Color.green);
         g2d.drawLine(0,0,0,panelHeight);
         g2d.drawLine(0, 0, panelWidth, 0);
@@ -167,6 +155,25 @@ public class Game extends JPanel implements Runnable{
         g2d.setFont(new Font("Arial", Font.BOLD, 18));
         String s = "Score: ";
         g2d.drawString(s, panelHeight / 2 + 10, panelHeight + 40);
+    }
+
+    /**
+     * overridden paintComponent method
+     * @param g Graphics
+     */
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        //draw pacman
+        drawPacMan(g2d);
+
+        //draw ghosts
+        drawGhosts(g2d);
+
+        //draw borders
+        drawBorders(g2d);
     }
 
     /**
@@ -215,6 +222,7 @@ public class Game extends JPanel implements Runnable{
             if (key == KeyEvent.VK_P) {
                 if (running) {
                     running = false;
+                    add(new PauseMenu());
                 } else {
                     running = true;
                 }

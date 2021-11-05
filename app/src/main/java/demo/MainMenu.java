@@ -72,6 +72,7 @@ public class MainMenu extends JPanel implements ActionListener {
         add(group);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == playBtn){
             Game game = new Game();

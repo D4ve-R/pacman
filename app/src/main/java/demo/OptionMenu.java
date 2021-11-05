@@ -17,6 +17,7 @@ import javax.swing.BoxLayout;
 public class OptionMenu extends JPanel implements ActionListener {
     private JPanel group = new JPanel();
     private JLabel label = new JLabel("Optionen");
+    private JLabel info = new JLabel();
     private JButton keyBtn = new JButton("Tastenbelegung");
     private JButton descrpBtn = new JButton("Spielbeschreibung");
     private JButton backBtn = new JButton("zurück");
@@ -24,9 +25,7 @@ public class OptionMenu extends JPanel implements ActionListener {
 
     public OptionMenu(JFrame f) {
         this.f = f;
-        setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        GridBagConstraints c = new GridBagConstraints();
+        setLayout(new BorderLayout());
 
         JPanel btns = new JPanel();
         btns.add(keyBtn);
@@ -38,16 +37,27 @@ public class OptionMenu extends JPanel implements ActionListener {
         group.add(label);
         group.add(btns);
 
+        add(backBtn, BorderLayout.SOUTH);
+        add(group, BorderLayout.NORTH);
+        add(info);
+
+        keyBtn.addActionListener(this);
+        descrpBtn.addActionListener(this);
         backBtn.addActionListener(this);
-        add(backBtn, c);
-        add(group);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == backBtn){
             MainMenu mM = new MainMenu(f);
             f.setContentPane(mM);
             f.revalidate();
+        }
+        else if(e.getSource() == keyBtn){
+            info.setText("<html>Das hier sind <br>die Key bindings</html>");
+        }
+        else if(e.getSource() == descrpBtn){
+            info.setText("<html>Das hier ist ein anderer <br> mutliline text <br> mal gucken ob das klappt</html>");
         }
     }
 }

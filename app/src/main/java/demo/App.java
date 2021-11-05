@@ -6,11 +6,11 @@ package demo;
 
 import java.awt.Dimension;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+
 
 public class App extends JFrame {
     public App(){
-        setTitle("test");
+        setTitle("Mac-Pan");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(new MainMenu(this));
         setMinimumSize(new Dimension(800, 600));

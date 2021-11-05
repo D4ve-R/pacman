@@ -53,6 +53,7 @@ public class FileEditor extends JPanel implements ActionListener {
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == openBtn){
             int returnVal = fc.showOpenDialog(FileEditor.this);
