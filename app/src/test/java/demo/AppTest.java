@@ -3,11 +3,24 @@
  */
 package demo;
 
+import org.junit.Ignore;
 import org.junit.Test;
+
+
 import static org.junit.Assert.*;
 
 public class AppTest {
     @Test public void appHasAGreeting() {
         App classUnderTest = new App();
     }
+
+    @Ignore
+    @Test( expected = IllegalArgumentException.class)
+    public void  testConstructors(){
+        MainMenu mM = new MainMenu(null);
+        OptionMenu oM = new OptionMenu(null);
+        FileEditor fe = new FileEditor(null);
+
+    }
+
 }
