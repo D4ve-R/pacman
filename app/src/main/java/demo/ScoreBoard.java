@@ -4,16 +4,31 @@
  */
 package demo;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class ScoreBoard extends JPanel {
+public class ScoreBoard extends JPanel implements ActionListener {
+    private JButton backBtn = new JButton("zurück");
     private JLabel label = new JLabel("HighScores");
-    public ScoreBoard(){
+    JFrame f;
 
+    public ScoreBoard(JFrame f){
+        this.f = f;
+        backBtn.addActionListener(this);
+        add(backBtn);
+        add(label);
     }
 
     private void checkScores(int currentScore){
 
+    }
+
+    public void actionPerformed(ActionEvent e){
+        if(e.getSource() == backBtn){
+            MainMenu mM = new MainMenu(f);
+            f.setContentPane(mM);
+            f.revalidate();
+        }
     }
 }

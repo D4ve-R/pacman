@@ -3,11 +3,7 @@ package demo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JFileChooser;
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -16,20 +12,25 @@ import java.util.Scanner;
 
 public class FileEditor extends JPanel implements ActionListener {
     private final JFileChooser fc = new JFileChooser();
+    private JFrame f;
     private JButton openBtn = new JButton("Open File");
     private JButton saveBtn = new JButton("Save");
+    private JButton backBtn = new JButton("zurück");
     private JTextArea textArea = new JTextArea();
     private JScrollPane scrollPane = new JScrollPane(textArea);
     private File file;
     private Scanner sc;
 
-    public FileEditor() {
+    public FileEditor(JFrame f) {
+        this.f = f;
         initialize();
         setLayout(new BorderLayout());
 
         JPanel btns = new JPanel();
         btns.add(openBtn);
         btns.add(saveBtn);
+        btns.add(backBtn);
+        backBtn.addActionListener(this);
         openBtn.addActionListener(this);
         saveBtn.addActionListener(this);
 
@@ -80,6 +81,11 @@ public class FileEditor extends JPanel implements ActionListener {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
+        else if(e.getSource() == backBtn){
+            MainMenu mM = new MainMenu(f);
+            f.setContentPane(mM);
+            f.revalidate();
         }
     }
 }

@@ -28,6 +28,7 @@ public class MainMenu extends JPanel implements ActionListener {
     private JButton loadBtn = new JButton("Spiel laden");
     private JButton scoreBtn = new JButton("HighScores");
     private JButton optionBtn = new JButton("Optionen");
+    private JButton editBtn = new JButton("Level Editor");
     private JButton exitBtn = new JButton("Spiel beenden");
     private Image img;
     private JFrame f; //parent frame
@@ -47,7 +48,6 @@ public class MainMenu extends JPanel implements ActionListener {
 
         group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
 
-
         JLabel label = new JLabel(new ImageIcon(img));
         group.add(label);
 
@@ -57,12 +57,14 @@ public class MainMenu extends JPanel implements ActionListener {
         buttons.add(loadBtn);
         buttons.add(scoreBtn);
         buttons.add(optionBtn);
+        buttons.add(editBtn);
         buttons.add(exitBtn);
 
         playBtn.addActionListener(this);
         loadBtn.addActionListener(this);
         scoreBtn.addActionListener(this);
         optionBtn.addActionListener(this);
+        editBtn.addActionListener(this);
         exitBtn.addActionListener(this);
 
         group.add(buttons);
@@ -81,13 +83,18 @@ public class MainMenu extends JPanel implements ActionListener {
 
         }
         else if(e.getSource() == scoreBtn){
-            FileEditor fe = new FileEditor();
-            f.setContentPane(fe);
+            ScoreBoard board = new ScoreBoard(f);
+            f.setContentPane(board);
             f.revalidate();
         }
         else if(e.getSource() == optionBtn){
-            OptionMenu optM = new OptionMenu();
+            OptionMenu optM = new OptionMenu(f);
             f.setContentPane(optM);
+            f.revalidate();
+        }
+        else if(e.getSource() == editBtn){
+            FileEditor editor = new FileEditor(f);
+            f.setContentPane(editor);
             f.revalidate();
         }
         else if(e.getSource() == exitBtn){
