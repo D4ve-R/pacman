@@ -7,8 +7,10 @@ package demo;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.FileReader;
 
-import javax.swing.JPanel;
+
+import javax.swing.*;
 
 /**
  * The Game Class handles all the logic, input and output
@@ -23,6 +25,15 @@ public class Game extends JPanel implements Runnable{
     private boolean running;
     private boolean loop;
     private int speed = 10;
+
+    private Image ghost;
+    private Image item;
+    private Image wall;
+    private Image floor;
+    private Image door;
+    private Image key;
+
+    private char[][] data = new char[20][30];
 
     //pacman attributes
     private int xPos, yPos;     //figure position top left corner
@@ -39,25 +50,68 @@ public class Game extends JPanel implements Runnable{
      * Calls @see initVars()
      */
     public Game(){
-        panelWidth = 500;
-        panelHeight = 500;
+        panelWidth = 900;
+        panelHeight = 600;
         addKeyListener(new KeyHandler());
         setFocusable(true);
         setBackground(Color.black);
         initVars();
+        initFromFile("./ressources/levels/test.txt");
+        
+        loadImages();
+    }
+
+    /**
+     * loads Images from sources
+     */
+    private void loadImages() {
+        ghost = new ImageIcon("./ressources/images/Gegner.png").getImage();
+        item = new ImageIcon("./ressources/images/Item.png").getImage();
+        wall = new ImageIcon("./ressources/images/Wand.png").getImage();
+        floor = new ImageIcon("./ressources/images/Boden.png").getImage();
+        door = new ImageIcon("./ressources/images/Door.png").getImage();
+        key = new ImageIcon("./ressources/images/Muenze.png").getImage();
     }
 
     /**
      * Method to initialize xPos, yPos, dx, dy
      */
-    public void initVars(){
-        xPos = panelWidth / 2 - 25;
-        yPos = panelHeight / 2 - 25;
-        dx = 50;
-        dy = 50;
+    private void initVars(){
+        xPos = panelWidth / 2 - 15;
+        yPos = panelHeight / 2 - 15;
+        dx = 30;
+        dy = 30;
 
         ghostsX = new int[]{25, panelWidth / 2 + 50 , panelWidth - 2 * dx};
         ghostsY = new int[]{25, panelHeight / 2 + 50, panelHeight - 2 * dy};
+    }
+
+    /**
+     * init data[][] from level.txt file
+     * @param filename of file to be processed
+     */
+    private void initFromFile(String filename){
+        try {
+            FileReader fileReader = new FileReader(filename);
+            int in;
+            int i = 0;
+            int j = 0;
+            int count = 1;
+            while((in = fileReader.read()) != -1) {
+                if(in < 41 || in > 119) continue;
+                System.out.println(count++);
+                    data[j][i] = (char) in;
+                    if (i == 29) {
+                        ++j;
+                        if (j == 20) break;
+                        i = 0;
+                    }
+                    ++i;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -134,6 +188,30 @@ public class Game extends JPanel implements Runnable{
         stop();
     }
 
+    private void drawAll(Graphics2D g, char[][] arr){
+        for(int i = 0; i < arr.length; i++){
+            for(int j = 0; j < arr[0].length; j++){
+                switch (arr[i][j]){
+                    case 'h':
+                        drawWall(g, j * 30, i * 30);
+                        break;
+                    case '*':
+                        drawItem(g, j * 30, i * 30);
+                        break;
+                }
+            }
+        }
+    }
+
+    private void drawWall(Graphics2D g, int x, int y){
+        g.drawImage(wall, x, y, this);
+    }
+
+    private void drawItem(Graphics2D g, int x, int y){
+        g.drawImage(item, x, y, this);
+    }
+
+
     private void drawPacMan(Graphics2D g2d){
         g2d.setPaint(Color.yellow);
         g2d.fillArc(xPos, yPos, dx, dy,bite ? pacmanAngle : (pacmanAngle - 20), bite ? 300 : 340);
@@ -142,7 +220,7 @@ public class Game extends JPanel implements Runnable{
     private void drawGhosts(Graphics2D g2d){
         g2d.setPaint(Color.white);
         for(int i = 0; i < ghostsX.length; i++){
-            g2d.fillRect(ghostsX[i], ghostsY[i], dx, dy);
+            g2d.drawImage(ghost, ghostsX[i], ghostsY[i], this);
         }
     }
 
@@ -166,11 +244,13 @@ public class Game extends JPanel implements Runnable{
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+        drawAll(g2d, data);
+
         //draw pacman
-        drawPacMan(g2d);
+        //drawPacMan(g2d);
 
         //draw ghosts
-        drawGhosts(g2d);
+        //drawGhosts(g2d);
 
         //draw borders
         drawBorders(g2d);

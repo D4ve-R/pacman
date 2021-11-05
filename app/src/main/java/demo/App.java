@@ -13,9 +13,10 @@ public class App extends JFrame {
         setTitle("Mac-Pan");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(new MainMenu(this));
-        setMinimumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(950, 700));
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+        setResizable(false);
     }
 }

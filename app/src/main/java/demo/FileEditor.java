@@ -16,7 +16,7 @@ public class FileEditor extends JPanel implements ActionListener {
     private JButton openBtn = new JButton("Open File");
     private JButton saveBtn = new JButton("Save");
     private JButton backBtn = new JButton("zurück");
-    private JTextArea textArea = new JTextArea();
+    private JTextArea textArea = new JTextArea(20, 30);
     private JScrollPane scrollPane = new JScrollPane(textArea);
     private File file;
     private Scanner sc;
@@ -75,6 +75,7 @@ public class FileEditor extends JPanel implements ActionListener {
         }
         else if(e.getSource() == saveBtn){
             String s = textArea.getText();
+
             try {
                 FileWriter myWriter = new FileWriter(file);
                 myWriter.write(s);
