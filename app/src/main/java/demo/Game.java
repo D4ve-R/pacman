@@ -16,14 +16,14 @@ import javax.swing.*;
  * It inherits from @see <a href="https://docs.oracle.com/javase/7/docs/api/javax/swing/JPanel.html">JPanel</a>
  * It implements @see <a href="https://docs.oracle.com/javase/7/docs/api/java/awt/event/ActionListener.html">ActionListener</a>
  */
-public class Game extends JPanel implements Runnable{
+public class Game extends JPanel implements Runnable {
 
     private Thread thread;
     private final int panelWidth;
     private final int panelHeight;
     private boolean running;
     private boolean loop;
-    private boolean once = true;
+    private boolean startPositions = true;
     private int speed = 30;
     public int score;
 
@@ -34,20 +34,21 @@ public class Game extends JPanel implements Runnable{
     private Image door;
     private Image key;
     private Image coin;
+    private Image life;
 
     private char[][] data = new char[20][30];
 
-    //pacman attributes
+    // pacman attributes
+    private int lives;
     private int xPos, yPos;     //figure position top left corner
     private int dx, dy;         // figure dimension
     private int pacmanAngle;
     private boolean bite;       //toggles to animate biting
 
-    //ghosts attributes
+    // ghost attributes
     private int[] ghostsX;
     private int[] ghostsY;
     private int ghostCount;
-
 
     /**
      * Constructor method for Game
@@ -61,7 +62,6 @@ public class Game extends JPanel implements Runnable{
         setBackground(Color.black);
         initVars();
         initFromFile("./ressources/levels/test.txt");
-        
         loadImages();
     }
 
@@ -76,21 +76,23 @@ public class Game extends JPanel implements Runnable{
         door = new ImageIcon("./ressources/images/Door.png").getImage();
         key = new ImageIcon("./ressources/images/Key.png").getImage();
         coin = new ImageIcon("./ressources/images/Muenze.png").getImage();
+        life = new ImageIcon("./ressources/images/Leben.png").getImage();
     }
 
     /**
      * Method to initialize xPos, yPos, dx, dy
      */
     private void initVars(){
-        xPos = panelWidth / 2 - 15;
-        yPos = panelHeight / 2 - 15;
         dx = 30;
         dy = 30;
+        xPos = panelWidth/(2 - (dx/2));
+        yPos = panelHeight/(2 - (dy/2));
 
         ghostsX = new int[10];
         ghostsY = new int[10];
         ghostCount = 0;
         score  = 0;
+        lives = 3;
     }
 
     /**
@@ -175,6 +177,7 @@ public class Game extends JPanel implements Runnable{
                 delta += (now - lastTime) / ns;
                 lastTime = now;
                 if (running)
+                    startPositions = false;
                     update();
                 frames++;
 
@@ -190,7 +193,6 @@ public class Game extends JPanel implements Runnable{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                once = false;
             }
         }
         stop();
@@ -204,10 +206,11 @@ public class Game extends JPanel implements Runnable{
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-
         drawAll(g2d, data);
-
         drawPacMan(g2d, xPos, yPos);
+        for(int i = 0; i < ghostCount; i++){
+            drawGhosts(g2d, ghostsX[i], ghostsY[i]);
+        }
     }
 
     private void drawAll(Graphics2D g, char[][] arr){
@@ -221,23 +224,25 @@ public class Game extends JPanel implements Runnable{
                         drawWall(g, j * 30, i * 30);
                         break;
                     case '*':
-                        drawItem(g, j * 30, i * 30);
+                        drawCoin(g, j * 30, i * 30);
                         break;
                     case 'g':
-                        drawGhosts(g, j * 30, i * 30);
-                        ghostsX[ghostCount] = j * 30;
-                        ghostsY[ghostCount] = i * 30;
-                        ghostCount++;
+                        if(startPositions) {
+                            drawGhosts(g, j * 30, i * 30);
+                            ghostsX[ghostCount] = j * 30;
+                            ghostsY[ghostCount] = i * 30;
+                            ghostCount++;
+                        }
                         break;
                     case 'p':
-                        if(once) {
+                        if(startPositions) {
                             drawPacMan(g, j * 30, i * 30);
                             xPos = j * 30;
                             yPos = i * 30;
                         }
                         drawFloor(g, j * 30, i * 30);
                         break;
-                    case 'd':
+                    case 'x':
                         drawDoor(g, j * 30, i * 30);
                         break;
                     case 'k':
@@ -245,6 +250,9 @@ public class Game extends JPanel implements Runnable{
                         break;
                     case '.':
                         drawFloor(g, j * 30, i *30);
+                        break;
+                    default:
+                        drawItem(g, j * 30, i * 30);
                         break;
                 }
             }
@@ -271,28 +279,38 @@ public class Game extends JPanel implements Runnable{
         g.drawImage(item, x, y, this);
     }
 
-    private void drawPacMan(Graphics2D g2d, int x, int y){
-        g2d.setPaint(Color.yellow);
-        g2d.fillArc(x, y, dx, dy,bite ? pacmanAngle : (pacmanAngle - 20), bite ? 300 : 340);
+    private void drawCoin(Graphics2D g, int x, int y){
+        g.drawImage(coin, x, y, this);
     }
 
     private void drawGhosts(Graphics2D g2d, int x, int y){
         g2d.drawImage(ghost, x, y, this);
     }
 
+    private void drawPacMan(Graphics2D g2d, int x, int y){
+        g2d.setPaint(Color.yellow);
+        g2d.fillArc(x, y, dx, dy,bite ? pacmanAngle : (pacmanAngle - 20), bite ? 300 : 340);
+    }
+
     private void drawBorders(Graphics2D g2d){
-        g2d.setPaint(Color.green);
+        g2d.setPaint(Color.white);
         g2d.drawLine(0,0,0,panelHeight);
         g2d.drawLine(0, 0, panelWidth, 0);
         g2d.drawLine(0, panelHeight, panelWidth, panelHeight);
         g2d.drawLine(panelWidth, 0, panelWidth, panelHeight);
-        g2d.setFont(new Font("Arial", Font.BOLD, 18));
-        String s = "Score: " + score;
-        g2d.drawString(s, panelHeight / 2 + 10, panelHeight + 40);
+        g2d.setFont(new Font("Arial", Font.BOLD, 20));
+        g2d.drawString("Score: " + score, panelHeight / 2 + 10, panelHeight + 40);
+        for(int i = 0; i < lives; i++){
+            g2d.drawImage(life, (i * 30) + (30 * i),panelHeight + 10, this);
+        }
+    }
+
+    private void drawGameOver(){
+        System.out.println("Game Over");
     }
 
     /**
-     * calls checkCollsion and repaint
+     * calls checkCollision and repaint
      */
     private void update(){
         checkCollision();
@@ -300,43 +318,55 @@ public class Game extends JPanel implements Runnable{
     }
 
     /**
-     * collision handler
-     */
-    private void collision(){
-        System.out.println("collision");
-        //Sound effect = new Sound("./ressources/audio/pacman_eatghost.wav", false);
-        //effect.play();
-    }
-
-    /**
-     * checks for collsion between pacman and ghosts
+     * checks for collision between pacman and ghosts
      */
     private void checkCollision(){
+        SoundPlayer effect = new SoundPlayer("./ressources/audio/pacman_chomp.wav", false);
+
         // detect collision with item
         if(data[yPos/30][xPos/30] == '*'){
             data[yPos/30][xPos/30] = '.';
             score += 10;
+            effect.play();
         }
         else if(data[yPos/30][(xPos + dx - 1)/30] == '*'){
             data[yPos/30][(xPos + dx)/30] = '.';
             score += 10;
+            effect.play();
         }
         else if(data[(yPos + dy - 1)/30][xPos/30] == '*'){
             data[(yPos + dy)/30][xPos/30] = '.';
             score += 10;
+            effect.play();
         }
         else if(data[(yPos + dy - 1)/30][(xPos + dx - 1)/30] == '*'){
             data[(yPos +dy)/30][(xPos + dx)/30] = '.';
             score += 10;
+            effect.play();
         }
 
-        // check collison with ghosts
+        // check collision with ghosts
         for(int i = 0; i < ghostsX.length; i++){
-            if(((xPos <= ghostsX[i] + dx) && (xPos >= ghostsX[i])) || ((xPos + dx >= ghostsX[i]) && (xPos + dx <= ghostsX[i] + dx))){
-                if(((yPos >= ghostsY[i]) && (yPos <= ghostsY[i] + dy)) || ((yPos + dy >= ghostsY[i]) && yPos + dy <= ghostsY[i] + dy))
+            if(((xPos < ghostsX[i] + dx) && (xPos >= ghostsX[i])) || ((xPos + dx > ghostsX[i]) && (xPos + dx <= ghostsX[i] + dx))){
+                if(((yPos >= ghostsY[i]) && (yPos < ghostsY[i] + dy)) || ((yPos + dy > ghostsY[i]) && yPos + dy <= ghostsY[i] + dy))
                     collision();
             }
         }
+    }
+
+    /**
+     * collision handler
+     */
+    private void collision(){
+        lives--;
+        if(lives == 0){
+            drawGameOver();
+            running = false;
+        }
+        startPositions = true;
+        System.out.println("collision");
+        SoundPlayer effect = new SoundPlayer("./ressources/audio/pacman_eatghost.wav", false);
+        effect.play();
     }
 
     /**
@@ -385,7 +415,6 @@ public class Game extends JPanel implements Runnable{
                     pacmanAngle = 300;
                     yPos += speed;
                     if(data[(yPos + dy - 1)/30][xPos/30] == 'h'){
-                        System.out.println("Debug");
                         yPos -= speed;
                     }
                 }
