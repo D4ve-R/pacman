@@ -8,8 +8,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.FileReader;
-
-
+import java.io.IOException;
 import javax.swing.*;
 
 /**
@@ -24,6 +23,7 @@ public class Game extends JPanel implements Runnable{
     private final int panelHeight;
     private boolean running;
     private boolean loop;
+    private boolean once = true;
     private int speed = 10;
 
     private Image ghost;
@@ -32,6 +32,7 @@ public class Game extends JPanel implements Runnable{
     private Image floor;
     private Image door;
     private Image key;
+    private Image coin;
 
     private char[][] data = new char[20][30];
 
@@ -44,6 +45,8 @@ public class Game extends JPanel implements Runnable{
     //ghosts attributes
     private int[] ghostsX;
     private int[] ghostsY;
+    private int ghostCount;
+
 
     /**
      * Constructor method for Game
@@ -70,7 +73,8 @@ public class Game extends JPanel implements Runnable{
         wall = new ImageIcon("./ressources/images/Wand.png").getImage();
         floor = new ImageIcon("./ressources/images/Boden.png").getImage();
         door = new ImageIcon("./ressources/images/Door.png").getImage();
-        key = new ImageIcon("./ressources/images/Muenze.png").getImage();
+        key = new ImageIcon("./ressources/images/Key.png").getImage();
+        coin = new ImageIcon("./ressources/images/Muenze.png").getImage();
     }
 
     /**
@@ -82,8 +86,9 @@ public class Game extends JPanel implements Runnable{
         dx = 30;
         dy = 30;
 
-        ghostsX = new int[]{25, panelWidth / 2 + 50 , panelWidth - 2 * dx};
-        ghostsY = new int[]{25, panelHeight / 2 + 50, panelHeight - 2 * dy};
+        ghostsX = new int[10];
+        ghostsY = new int[10];
+        ghostCount = 0;
     }
 
     /**
@@ -92,23 +97,24 @@ public class Game extends JPanel implements Runnable{
      */
     private void initFromFile(String filename){
         try {
-            FileReader fileReader = new FileReader(filename);
+            FileReader reader = new FileReader(filename);
             int in;
             int i = 0;
             int j = 0;
-            int count = 1;
-            while((in = fileReader.read()) != -1) {
-                if(in < 41 || in > 119) continue;
-                System.out.println(count++);
-                    data[j][i] = (char) in;
-                    if (i == 29) {
-                        ++j;
-                        if (j == 20) break;
-                        i = 0;
-                    }
-                    ++i;
+            int count = 0;
+            while((in = reader.read()) != -1) {
+                if(in < 32 || in > 122) continue;
+                if (j == 20) break;
+
+                data[j][i] = (char) in;
+                if (i == 29) {
+                    i = 0;
+                    ++j;
+                    continue;
+                }
+                ++i;
             }
-        }catch(Exception e){
+        }catch(IOException e){
             e.printStackTrace();
         }
 
@@ -128,7 +134,6 @@ public class Game extends JPanel implements Runnable{
         SoundPlayer soundtrack = new SoundPlayer("./ressources/audio/file_example_WAV.wav", true);
         soundtrack.play();
     }
-
 
     /**
      * Method stops thread, sets running to false
@@ -183,12 +188,16 @@ public class Game extends JPanel implements Runnable{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                once = false;
             }
         }
         stop();
     }
 
     private void drawAll(Graphics2D g, char[][] arr){
+        //draw borders
+        drawBorders(g);
+
         for(int i = 0; i < arr.length; i++){
             for(int j = 0; j < arr[0].length; j++){
                 switch (arr[i][j]){
@@ -198,9 +207,41 @@ public class Game extends JPanel implements Runnable{
                     case '*':
                         drawItem(g, j * 30, i * 30);
                         break;
+                    case 'g':
+                        drawGhosts(g, j * 30, i * 30);
+                        ghostsX[ghostCount] = j * 30;
+                        ghostsY[ghostCount] = i * 30;
+                        ghostCount++;
+                        break;
+                    case 'p':
+                        if(once) {
+                            drawPacMan(g, j * 30, i * 30);
+                            xPos = j * 30;
+                            yPos = i * 30;
+                        }
+                        drawFloor(g, j * 30, i * 30);
+                        break;
+                    case 'd':
+                        drawDoor(g, j * 30, i * 30);
+                        break;
+                    case 'k':
+                        drawKey(g, j * 30, i * 30);
+                        break;
                 }
             }
         }
+    }
+
+    private void drawKey(Graphics g, int x, int y){
+        g.drawImage(key, x, y, this);
+    }
+
+    private void drawDoor(Graphics2D g, int x, int y){
+        g.drawImage(door, x, y, this);
+    }
+
+    private void drawFloor(Graphics2D g, int x, int y){
+        g.drawImage(floor, x, y, this);
     }
 
     private void drawWall(Graphics2D g, int x, int y){
@@ -211,17 +252,13 @@ public class Game extends JPanel implements Runnable{
         g.drawImage(item, x, y, this);
     }
 
-
-    private void drawPacMan(Graphics2D g2d){
+    private void drawPacMan(Graphics2D g2d, int x, int y){
         g2d.setPaint(Color.yellow);
-        g2d.fillArc(xPos, yPos, dx, dy,bite ? pacmanAngle : (pacmanAngle - 20), bite ? 300 : 340);
+        g2d.fillArc(x, y, dx, dy,bite ? pacmanAngle : (pacmanAngle - 20), bite ? 300 : 340);
     }
 
-    private void drawGhosts(Graphics2D g2d){
-        g2d.setPaint(Color.white);
-        for(int i = 0; i < ghostsX.length; i++){
-            g2d.drawImage(ghost, ghostsX[i], ghostsY[i], this);
-        }
+    private void drawGhosts(Graphics2D g2d, int x, int y){
+        g2d.drawImage(ghost, x, y, this);
     }
 
     private void drawBorders(Graphics2D g2d){
@@ -246,14 +283,7 @@ public class Game extends JPanel implements Runnable{
 
         drawAll(g2d, data);
 
-        //draw pacman
-        //drawPacMan(g2d);
-
-        //draw ghosts
-        //drawGhosts(g2d);
-
-        //draw borders
-        drawBorders(g2d);
+        drawPacMan(g2d, xPos, yPos);
     }
 
     /**
@@ -331,6 +361,16 @@ public class Game extends JPanel implements Runnable{
                         yPos = panelHeight - dy;
                 }
             }
+        }
+    }
+
+    public void swap(char[][]arr, int i, int j, int k, int l){
+        try{
+            char tmp = arr[i][j];
+            arr[i][j] = arr[k][l];
+            arr[k][l] = tmp;
+        }catch(ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
         }
     }
 }
