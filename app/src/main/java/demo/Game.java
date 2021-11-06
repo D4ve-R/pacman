@@ -24,7 +24,8 @@ public class Game extends JPanel implements Runnable{
     private boolean running;
     private boolean loop;
     private boolean once = true;
-    private int speed = 10;
+    private int speed = 30;
+    public int score;
 
     private Image ghost;
     private Image item;
@@ -89,6 +90,7 @@ public class Game extends JPanel implements Runnable{
         ghostsX = new int[10];
         ghostsY = new int[10];
         ghostCount = 0;
+        score  = 0;
     }
 
     /**
@@ -194,6 +196,20 @@ public class Game extends JPanel implements Runnable{
         stop();
     }
 
+    /**
+     * overridden paintComponent method
+     * @param g Graphics
+     */
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        drawAll(g2d, data);
+
+        drawPacMan(g2d, xPos, yPos);
+    }
+
     private void drawAll(Graphics2D g, char[][] arr){
         //draw borders
         drawBorders(g);
@@ -226,6 +242,9 @@ public class Game extends JPanel implements Runnable{
                         break;
                     case 'k':
                         drawKey(g, j * 30, i * 30);
+                        break;
+                    case '.':
+                        drawFloor(g, j * 30, i *30);
                         break;
                 }
             }
@@ -268,22 +287,8 @@ public class Game extends JPanel implements Runnable{
         g2d.drawLine(0, panelHeight, panelWidth, panelHeight);
         g2d.drawLine(panelWidth, 0, panelWidth, panelHeight);
         g2d.setFont(new Font("Arial", Font.BOLD, 18));
-        String s = "Score: ";
+        String s = "Score: " + score;
         g2d.drawString(s, panelHeight / 2 + 10, panelHeight + 40);
-    }
-
-    /**
-     * overridden paintComponent method
-     * @param g Graphics
-     */
-    @Override
-    public void paintComponent(Graphics g){
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-
-        drawAll(g2d, data);
-
-        drawPacMan(g2d, xPos, yPos);
     }
 
     /**
@@ -307,6 +312,25 @@ public class Game extends JPanel implements Runnable{
      * checks for collsion between pacman and ghosts
      */
     private void checkCollision(){
+        // detect collision with item
+        if(data[yPos/30][xPos/30] == '*'){
+            data[yPos/30][xPos/30] = '.';
+            score += 10;
+        }
+        else if(data[yPos/30][(xPos + dx - 1)/30] == '*'){
+            data[yPos/30][(xPos + dx)/30] = '.';
+            score += 10;
+        }
+        else if(data[(yPos + dy - 1)/30][xPos/30] == '*'){
+            data[(yPos + dy)/30][xPos/30] = '.';
+            score += 10;
+        }
+        else if(data[(yPos + dy - 1)/30][(xPos + dx - 1)/30] == '*'){
+            data[(yPos +dy)/30][(xPos + dx)/30] = '.';
+            score += 10;
+        }
+
+        // check collison with ghosts
         for(int i = 0; i < ghostsX.length; i++){
             if(((xPos <= ghostsX[i] + dx) && (xPos >= ghostsX[i])) || ((xPos + dx >= ghostsX[i]) && (xPos + dx <= ghostsX[i] + dx))){
                 if(((yPos >= ghostsY[i]) && (yPos <= ghostsY[i] + dy)) || ((yPos + dy >= ghostsY[i]) && yPos + dy <= ghostsY[i] + dy))
@@ -342,23 +366,28 @@ public class Game extends JPanel implements Runnable{
                 if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) {
                     pacmanAngle = 210;
                     xPos -= speed;
-                    if (xPos < 0)
-                        xPos = 1;
+                    if(data[yPos/30][xPos/30] == 'h'){
+                        xPos += speed;
+                    }
                 } else if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
                     pacmanAngle = 30;
                     xPos += speed;
-                    if (xPos + dx > panelWidth)
-                        xPos = panelWidth - dx;
+                    if(data[yPos/30][(xPos + dx - 1)/30] == 'h'){
+                        xPos -= speed;
+                    }
                 } else if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
                     pacmanAngle = 120;
                     yPos -= speed;
-                    if (yPos < 0)
-                        yPos = 1;
+                    if(data[(yPos )/30][(xPos + dx - 1)/30] == 'h'){
+                        yPos += speed;
+                    }
                 } else if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
                     pacmanAngle = 300;
                     yPos += speed;
-                    if (yPos + dy > panelHeight)
-                        yPos = panelHeight - dy;
+                    if(data[(yPos + dy - 1)/30][xPos/30] == 'h'){
+                        System.out.println("Debug");
+                        yPos -= speed;
+                    }
                 }
             }
         }
