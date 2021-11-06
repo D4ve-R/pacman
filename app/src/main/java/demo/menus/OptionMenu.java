@@ -2,7 +2,9 @@
  * Project Mac-Pan
  * Author david rechkemmer
  */
-package demo;
+package demo.menus;
+
+import demo.menus.MainMenu;
 
 import java.awt.Font;
 import java.awt.BorderLayout;

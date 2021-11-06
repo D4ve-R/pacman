@@ -1,4 +1,4 @@
-package demo;
+package demo.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

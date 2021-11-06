@@ -2,7 +2,10 @@
  * Project Mac-Pan
  * Author david rechkemmer
  */
-package demo;
+package demo.game;
+
+import demo.utils.SoundPlayer;
+import demo.menus.PauseMenu;
 
 import java.awt.Font;
 import java.awt.Image;

@@ -2,7 +2,9 @@
  * Project Mac-Pan
  * Author david rechkemmer
  */
-package demo;
+package demo.menus;
+
+import demo.game.Game;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;

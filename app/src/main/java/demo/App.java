@@ -4,8 +4,11 @@
  */
 package demo;
 
+import demo.menus.MainMenu;
+
 import java.awt.Dimension;
 import javax.swing.JFrame;
+
 
 
 public class App extends JFrame {
