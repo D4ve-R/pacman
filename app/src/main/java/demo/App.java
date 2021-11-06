@@ -19,6 +19,5 @@ public class App extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setResizable(false);
-
     }
 }

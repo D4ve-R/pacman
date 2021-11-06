@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Scanner;
 
 public class FileEditor extends JPanel implements ActionListener {
@@ -45,10 +46,10 @@ public class FileEditor extends JPanel implements ActionListener {
 
     private void initialize() {
         try{
-            file = new File("./ressources/levels/data.txt");
+            file = new File(getURL("levels/data.txt").toURI());
             sc = new Scanner(file);
             fc.setCurrentDirectory(file);
-        }catch(FileNotFoundException e){
+        }catch(Exception e){
             e.printStackTrace();
         }
 
@@ -94,5 +95,9 @@ public class FileEditor extends JPanel implements ActionListener {
             f.setContentPane(mM);
             f.revalidate();
         }
+    }
+
+    public URL getURL(String filename){
+        return Thread.currentThread().getContextClassLoader().getResource(filename);
     }
 }
