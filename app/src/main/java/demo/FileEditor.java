@@ -3,7 +3,12 @@ package demo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -29,13 +34,13 @@ public class FileEditor extends JPanel implements ActionListener {
         JPanel btns = new JPanel();
         btns.add(openBtn);
         btns.add(saveBtn);
-        btns.add(backBtn);
         backBtn.addActionListener(this);
         openBtn.addActionListener(this);
         saveBtn.addActionListener(this);
 
         add(btns, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+        add(backBtn, BorderLayout.PAGE_END);
     }
 
     private void initialize() {

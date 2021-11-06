@@ -4,12 +4,17 @@
  */
 package demo;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.FileReader;
 import java.io.IOException;
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.ImageIcon;
 
 /**
  * The Game Class handles all the logic, input and output

@@ -4,10 +4,10 @@
  */
 package demo;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -37,7 +37,7 @@ public class OptionMenu extends JPanel implements ActionListener {
         group.add(label);
         group.add(btns);
 
-        add(backBtn, BorderLayout.SOUTH);
+        add(backBtn, BorderLayout.PAGE_END);
         add(group, BorderLayout.NORTH);
         add(info);
 
