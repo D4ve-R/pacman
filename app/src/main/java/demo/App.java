@@ -9,8 +9,6 @@ import demo.menus.MainMenu;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 
-
-
 public class App extends JFrame {
     public App(){
         setTitle("Mac-Pan");
@@ -21,5 +19,6 @@ public class App extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setResizable(false);
+
     }
 }

@@ -4,38 +4,57 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
 
 /**
  * Sound Class to play sounds
  * only tested on .wav files
  */
 public class SoundPlayer implements Runnable{
-    private String filename;         //!! depends on execution location / Pacman.java must be executed from /src
+    private URL url;
     private Clip clip;
     private Thread thread;
     private boolean forever;
+    private File file;
 
     /**
      * Constructor method, init new Thread to play audio clip
      * @param filename input audiofile
      */
     public SoundPlayer(String filename, boolean forever) {
-        this.filename = filename;
         this.forever = forever;
+        try {
+            file = new File(filename);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        thread = new Thread(this);
+    }
+
+
+    public SoundPlayer(URL url, boolean forever){
+        try{
+            file = Paths.get(url.toURI()).toFile();
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         thread = new Thread(this);
     }
 
     public void run(){
-        try {
-            clip = AudioSystem.getClip();
-            AudioInputStream inStream = AudioSystem.getAudioInputStream(new File(filename));
-            clip.open(inStream);
-            if(forever){
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
+        if(file != null) {
+            try {
+                clip = AudioSystem.getClip();
+                AudioInputStream inStream = AudioSystem.getAudioInputStream(file);
+                clip.open(inStream);
+                if (forever) {
+                    clip.loop(Clip.LOOP_CONTINUOUSLY);
+                }
+                clip.start();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            clip.start();
-        }catch(Exception e){
-            e.printStackTrace();
         }
     }
 

@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
 import java.io.File;
+import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 public class MainMenu extends JPanel implements ActionListener {
@@ -38,7 +39,8 @@ public class MainMenu extends JPanel implements ActionListener {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         try{
-            img = ImageIO.read(new File("./ressources/LoST_Gruen.png"));
+            //img = ImageIO.read(new File("./ressources/LoST_Gruen.png"));
+            img = ImageIO.read(Paths.get(Thread.currentThread().getContextClassLoader().getResource("images/LoST_Gruen.png").toURI()).toFile());
             img = img.getScaledInstance(200, 200, Image.SCALE_DEFAULT);
         }catch(Exception e){
             e.printStackTrace();

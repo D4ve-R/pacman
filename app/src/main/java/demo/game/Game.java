@@ -14,8 +14,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
+import java.net.URL;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 
@@ -69,7 +70,7 @@ public class Game extends JPanel implements Runnable {
         setFocusable(true);
         setBackground(Color.black);
         initVars();
-        initFromFile("./ressources/levels/test.txt");
+        initFromFile("levels/test.txt");
         loadImages();
     }
 
@@ -77,14 +78,14 @@ public class Game extends JPanel implements Runnable {
      * loads Images from sources
      */
     private void loadImages() {
-        ghost = new ImageIcon("./ressources/images/Gegner.png").getImage();
-        item = new ImageIcon("./ressources/images/Item.png").getImage();
-        wall = new ImageIcon("./ressources/images/Wand.png").getImage();
-        floor = new ImageIcon("./ressources/images/Boden.png").getImage();
-        door = new ImageIcon("./ressources/images/Door.png").getImage();
-        key = new ImageIcon("./ressources/images/Key.png").getImage();
-        coin = new ImageIcon("./ressources/images/Muenze.png").getImage();
-        life = new ImageIcon("./ressources/images/Leben.png").getImage();
+        ghost = new ImageIcon(getURL("images/Gegner.png")).getImage();
+        item = new ImageIcon(getURL("images/Item.png")).getImage();
+        wall = new ImageIcon(getURL("images/Wand.png")).getImage();
+        floor = new ImageIcon(getURL("images/Boden.png")).getImage();
+        door = new ImageIcon(getURL("images/Door.png")).getImage();
+        key = new ImageIcon(getURL("images/Key.png")).getImage();
+        coin = new ImageIcon(getURL("images/Muenze.png")).getImage();
+        life = new ImageIcon(getURL("images/Leben.png")).getImage();
     }
 
     /**
@@ -109,7 +110,7 @@ public class Game extends JPanel implements Runnable {
      */
     private void initFromFile(String filename){
         try {
-            FileReader reader = new FileReader(filename);
+            FileReader reader = new FileReader(new File(getURL(filename).toURI()));
             int in;
             int i = 0;
             int j = 0;
@@ -126,7 +127,7 @@ public class Game extends JPanel implements Runnable {
                 }
                 ++i;
             }
-        }catch(IOException e){
+        }catch(Exception e){
             e.printStackTrace();
         }
 
@@ -143,7 +144,7 @@ public class Game extends JPanel implements Runnable {
         thread.start();
         System.out.println("\u2705" + " Thread with ID: " + thread.getId() + " running!");
 
-        SoundPlayer soundtrack = new SoundPlayer("./ressources/audio/file_example_WAV.wav", true);
+        SoundPlayer soundtrack = new SoundPlayer(getURL("sound/file_example_WAV.wav"), true);
         soundtrack.play();
     }
 
@@ -329,7 +330,7 @@ public class Game extends JPanel implements Runnable {
      * checks for collision between pacman and ghosts
      */
     private void checkCollision(){
-        SoundPlayer effect = new SoundPlayer("./ressources/audio/pacman_chomp.wav", false);
+        SoundPlayer effect = new SoundPlayer(getURL("sound/pacman_chomp.wav"), false);
 
         // detect collision with item
         if(data[yPos/30][xPos/30] == '*'){
@@ -373,7 +374,7 @@ public class Game extends JPanel implements Runnable {
         }
         startPositions = true;
         System.out.println("collision");
-        SoundPlayer effect = new SoundPlayer("./ressources/audio/pacman_eatghost.wav", false);
+        SoundPlayer effect = new SoundPlayer(getURL("sound/pacman_eatghost.wav"), false);
         effect.play();
     }
 
@@ -438,5 +439,9 @@ public class Game extends JPanel implements Runnable {
         }catch(ArrayIndexOutOfBoundsException e){
             e.printStackTrace();
         }
+    }
+
+    public URL getURL(String filename){
+        return Thread.currentThread().getContextClassLoader().getResource(filename);
     }
 }
