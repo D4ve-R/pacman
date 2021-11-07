@@ -30,5 +30,11 @@ application {
 }
 
 processResources {
-    from("ressources")
+    from("resources")
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'demo.Main'
+    }
 }

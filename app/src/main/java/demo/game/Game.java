@@ -4,6 +4,7 @@
  */
 package demo.game;
 
+import demo.utils.ResourceHandler;
 import demo.utils.SoundPlayer;
 import demo.menus.PauseMenu;
 
@@ -14,9 +15,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.net.URL;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 
@@ -25,7 +26,7 @@ import javax.swing.ImageIcon;
  * It inherits from @see <a href="https://docs.oracle.com/javase/7/docs/api/javax/swing/JPanel.html">JPanel</a>
  * It implements @see <a href="https://docs.oracle.com/javase/7/docs/api/java/awt/event/ActionListener.html">ActionListener</a>
  */
-public class Game extends JPanel implements Runnable {
+public class Game extends JPanel implements Runnable, ResourceHandler {
 
     private Thread thread;
     private final int panelWidth;
@@ -78,14 +79,18 @@ public class Game extends JPanel implements Runnable {
      * loads Images from sources
      */
     private void loadImages() {
-        ghost = new ImageIcon(getURL("images/Gegner.png")).getImage();
-        item = new ImageIcon(getURL("images/Item.png")).getImage();
-        wall = new ImageIcon(getURL("images/Wand.png")).getImage();
-        floor = new ImageIcon(getURL("images/Boden.png")).getImage();
-        door = new ImageIcon(getURL("images/Door.png")).getImage();
-        key = new ImageIcon(getURL("images/Key.png")).getImage();
-        coin = new ImageIcon(getURL("images/Muenze.png")).getImage();
-        life = new ImageIcon(getURL("images/Leben.png")).getImage();
+        try {
+            ghost = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Gegner.png"))).getImage();
+            item = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Item.png"))).getImage();
+            wall = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Wand.png"))).getImage();
+            floor = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Boden.png"))).getImage();
+            door = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Door.png"))).getImage();
+            key = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Key.png"))).getImage();
+            coin = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Muenze.png"))).getImage();
+            life = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Leben.png"))).getImage();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -110,7 +115,7 @@ public class Game extends JPanel implements Runnable {
      */
     private void initFromFile(String filename){
         try {
-            FileReader reader = new FileReader(new File(getURL(filename).toURI()));
+            Reader reader = new InputStreamReader(getFileResourcesAsStream(filename));
             int in;
             int i = 0;
             int j = 0;
@@ -144,7 +149,7 @@ public class Game extends JPanel implements Runnable {
         thread.start();
         System.out.println("\u2705" + " Thread with ID: " + thread.getId() + " running!");
 
-        SoundPlayer soundtrack = new SoundPlayer(getURL("sound/file_example_WAV.wav"), true);
+        SoundPlayer soundtrack = new SoundPlayer("sound/file_example_WAV.wav", true);
         soundtrack.play();
     }
 
@@ -330,7 +335,7 @@ public class Game extends JPanel implements Runnable {
      * checks for collision between pacman and ghosts
      */
     private void checkCollision(){
-        SoundPlayer effect = new SoundPlayer(getURL("sound/pacman_chomp.wav"), false);
+        SoundPlayer effect = new SoundPlayer("sound/pacman_chomp.wav", false);
 
         // detect collision with item
         if(data[yPos/30][xPos/30] == '*'){
@@ -374,7 +379,7 @@ public class Game extends JPanel implements Runnable {
         }
         startPositions = true;
         System.out.println("collision");
-        SoundPlayer effect = new SoundPlayer(getURL("sound/pacman_eatghost.wav"), false);
+        SoundPlayer effect = new SoundPlayer("sound/pacman_eatghost.wav", false);
         effect.play();
     }
 
@@ -441,7 +446,16 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
-    public URL getURL(String filename){
-        return Thread.currentThread().getContextClassLoader().getResource(filename);
+    @Override
+    public InputStream getFileResourcesAsStream(String filename){
+        ClassLoader cl = getClass().getClassLoader();
+        InputStream in = cl.getResourceAsStream(filename);
+        if(in == null){
+            throw new IllegalArgumentException("File not found: " + filename);
+        }
+        else{
+            return in;
+        }
     }
+
 }

@@ -4,7 +4,7 @@
  */
 package demo.menus;
 
-import demo.menus.MainMenu;
+import demo.utils.ResourceHandler;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -14,8 +14,9 @@ import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
 
-public class ScoreBoard extends JPanel implements ActionListener {
+public class ScoreBoard extends JPanel implements ActionListener, ResourceHandler {
     private JButton backBtn = new JButton("zurück");
     private JLabel label = new JLabel("HighScores :");
     JFrame f;
@@ -40,5 +41,10 @@ public class ScoreBoard extends JPanel implements ActionListener {
             f.setContentPane(mM);
             f.revalidate();
         }
+    }
+
+    @Override
+    public InputStream getFileResourcesAsStream(String filename) {
+        return null;
     }
 }

@@ -17,12 +17,13 @@ import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
-import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 public class MainMenu extends JPanel implements ActionListener {
     JPanel group = new JPanel();
+    JLabel label;
     private JButton playBtn = new JButton("Spiel starten");
     private JButton loadBtn = new JButton("Spiel laden");
     private JButton scoreBtn = new JButton("HighScores");
@@ -39,17 +40,19 @@ public class MainMenu extends JPanel implements ActionListener {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         try{
-            //img = ImageIO.read(new File("./ressources/LoST_Gruen.png"));
-            img = ImageIO.read(Paths.get(Thread.currentThread().getContextClassLoader().getResource("images/LoST_Gruen.png").toURI()).toFile());
+            img = ImageIO.read(getFileResourcesAsStream("images/LoST_Gruen.png"));
             img = img.getScaledInstance(200, 200, Image.SCALE_DEFAULT);
         }catch(Exception e){
+            System.out.println("MainMenu Logo couldn't be found");
             e.printStackTrace();
         }
 
         group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
 
-        JLabel label = new JLabel(new ImageIcon(img));
-        group.add(label);
+        if(img != null) {
+            label = new JLabel(new ImageIcon(img));
+            group.add(label);
+        }
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, 1));
@@ -68,7 +71,6 @@ public class MainMenu extends JPanel implements ActionListener {
         exitBtn.addActionListener(this);
 
         group.add(buttons);
-
         add(group);
     }
 
@@ -100,6 +102,17 @@ public class MainMenu extends JPanel implements ActionListener {
         }
         else if(e.getSource() == exitBtn){
             f.dispose();
+        }
+    }
+
+    private InputStream getFileResourcesAsStream(String filename){
+        ClassLoader cl = getClass().getClassLoader();
+        InputStream in = cl.getResourceAsStream(filename);
+        if(in == null){
+            throw new IllegalArgumentException("File not found: " + filename);
+        }
+        else{
+            return in;
         }
     }
 }

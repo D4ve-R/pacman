@@ -1,5 +1,7 @@
 package demo.menus;
 
+import demo.utils.ResourceHandler;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
@@ -9,14 +11,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.Scanner;
 
-public class FileEditor extends JPanel implements ActionListener {
+public class FileEditor extends JPanel implements ActionListener, ResourceHandler {
     private final JFileChooser fc = new JFileChooser();
     private JFrame f;
     private JButton openBtn = new JButton("Open File");
@@ -46,8 +45,8 @@ public class FileEditor extends JPanel implements ActionListener {
 
     private void initialize() {
         try{
-            file = new File(getURL("levels/data.txt").toURI());
-            sc = new Scanner(file);
+            //file = new File(getURL("levels/data.txt").toURI());
+            sc = new Scanner(getFileResourcesAsStream("levels/data.txt"));
             fc.setCurrentDirectory(file);
         }catch(Exception e){
             e.printStackTrace();
@@ -99,5 +98,17 @@ public class FileEditor extends JPanel implements ActionListener {
 
     public URL getURL(String filename){
         return Thread.currentThread().getContextClassLoader().getResource(filename);
+    }
+
+    @Override
+    public InputStream getFileResourcesAsStream(String filename) {
+        ClassLoader cl = getClass().getClassLoader();
+        InputStream in = cl.getResourceAsStream(filename);
+        if(in == null){
+            throw new IllegalArgumentException("File not found: " + filename);
+        }
+        else{
+            return in;
+        }
     }
 }
