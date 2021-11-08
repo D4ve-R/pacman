@@ -14,7 +14,7 @@ import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.InputStream;
+
 
 public class ScoreBoard extends JPanel implements ActionListener, ResourceHandler {
     private JButton backBtn = new JButton("zurück");
@@ -41,10 +41,5 @@ public class ScoreBoard extends JPanel implements ActionListener, ResourceHandle
             f.setContentPane(mM);
             f.revalidate();
         }
-    }
-
-    @Override
-    public InputStream getFileResourcesAsStream(String filename) {
-        return null;
     }
 }

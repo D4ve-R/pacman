@@ -20,7 +20,5 @@ public class AppTest {
         MainMenu mM = new MainMenu(null);
         OptionMenu oM = new OptionMenu(null);
         FileEditor fe = new FileEditor(null);
-
     }
-
 }

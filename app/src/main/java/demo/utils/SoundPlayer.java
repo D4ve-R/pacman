@@ -3,10 +3,7 @@ package demo.utils;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Paths;
 
 /**
  * Sound Class to play sounds
@@ -56,15 +53,4 @@ public class SoundPlayer implements Runnable, ResourceHandler{
         thread.start();
     }
 
-    @Override
-    public InputStream getFileResourcesAsStream(String filename) {
-        ClassLoader cl = getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream(filename);
-        if(in == null){
-            throw new IllegalArgumentException("File not found: " + filename);
-        }
-        else{
-            return in;
-        }
-    }
 }

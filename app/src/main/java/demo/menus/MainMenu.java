@@ -5,6 +5,7 @@
 package demo.menus;
 
 import demo.game.Game;
+import demo.utils.ResourceHandler;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -17,11 +18,9 @@ import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
-import java.io.InputStream;
-import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
-public class MainMenu extends JPanel implements ActionListener {
+public class MainMenu extends JPanel implements ActionListener, ResourceHandler {
     JPanel group = new JPanel();
     JLabel label;
     private JButton playBtn = new JButton("Spiel starten");
@@ -102,17 +101,6 @@ public class MainMenu extends JPanel implements ActionListener {
         }
         else if(e.getSource() == exitBtn){
             f.dispose();
-        }
-    }
-
-    private InputStream getFileResourcesAsStream(String filename){
-        ClassLoader cl = getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream(filename);
-        if(in == null){
-            throw new IllegalArgumentException("File not found: " + filename);
-        }
-        else{
-            return in;
         }
     }
 }

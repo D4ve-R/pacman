@@ -45,8 +45,8 @@ public class FileEditor extends JPanel implements ActionListener, ResourceHandle
 
     private void initialize() {
         try{
-            //file = new File(getURL("levels/data.txt").toURI());
-            sc = new Scanner(getFileResourcesAsStream("levels/data.txt"));
+            file = new File(getURL("levels/data.txt").toURI());
+            sc = new Scanner(file);
             fc.setCurrentDirectory(file);
         }catch(Exception e){
             e.printStackTrace();
@@ -100,15 +100,4 @@ public class FileEditor extends JPanel implements ActionListener, ResourceHandle
         return Thread.currentThread().getContextClassLoader().getResource(filename);
     }
 
-    @Override
-    public InputStream getFileResourcesAsStream(String filename) {
-        ClassLoader cl = getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream(filename);
-        if(in == null){
-            throw new IllegalArgumentException("File not found: " + filename);
-        }
-        else{
-            return in;
-        }
-    }
 }

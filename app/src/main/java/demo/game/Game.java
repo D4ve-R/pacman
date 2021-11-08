@@ -119,7 +119,6 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
             int in;
             int i = 0;
             int j = 0;
-            int count = 0;
             while((in = reader.read()) != -1) {
                 if(in < 32 || in > 122) continue;
                 if (j == 20) break;
