@@ -16,7 +16,6 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;

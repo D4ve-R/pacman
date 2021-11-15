@@ -54,7 +54,7 @@ public class MainMenu extends JPanel implements ActionListener, ResourceHandler 
         }
 
         JPanel buttons = new JPanel();
-        buttons.setLayout(new BoxLayout(buttons, 1));
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
         buttons.add(playBtn);
         buttons.add(loadBtn);
         buttons.add(scoreBtn);
@@ -82,7 +82,7 @@ public class MainMenu extends JPanel implements ActionListener, ResourceHandler 
             game.start();
         }
         else if(e.getSource() == loadBtn){
-
+            //coming soon
         }
         else if(e.getSource() == scoreBtn){
             ScoreBoard board = new ScoreBoard(f);
