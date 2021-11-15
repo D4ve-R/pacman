@@ -5,16 +5,14 @@
 package demo.game;
 
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.*;
-import javax.imageio.ImageIO;
+import java.io.Reader;
+import java.io.InputStreamReader;
 import javax.swing.JPanel;
-import javax.swing.ImageIcon;
 
 import demo.game.gameObjects.GameObject;
 import demo.game.gameObjects.Enemy;
@@ -39,14 +37,13 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
     public int score;
 
     private GameObject ghost;
-    //private Image ghost;
-    private Image item;
-    private Image wall;
-    private Image floor;
-    private Image door;
-    private Image key;
-    private Image coin;
-    private Image life;
+    private GameObject item;
+    private GameObject wall;
+    private GameObject floor;
+    private GameObject door;
+    private GameObject key;
+    private GameObject coin;
+    private GameObject life;
 
     private char[][] data = new char[20][30];
 
@@ -74,26 +71,21 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
         setBackground(Color.black);
         initVars();
         initFromFile("levels/test.txt");
-        loadImages();
+        loadGameObjects();
     }
 
     /**
-     * loads Images from sources
+     * loads GameObjects
      */
-    private void loadImages() {
-        try {
-            ghost = new Enemy();
-            //ghost = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Gegner.png"))).getImage();
-            item = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Item.png"))).getImage();
-            wall = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Wand.png"))).getImage();
-            floor = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Boden.png"))).getImage();
-            door = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Door.png"))).getImage();
-            key = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Key.png"))).getImage();
-            coin = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Muenze.png"))).getImage();
-            life = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Leben.png"))).getImage();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+    private void loadGameObjects() {
+        ghost = new Enemy();
+        item = new GameObject("Item.png");
+        wall = new GameObject("Wand.png");
+        floor = new GameObject("Boden.png");
+        door = new GameObject("Door.png");
+        key = new GameObject("Key.png");
+        coin = new GameObject("Muenze.png");
+        life = new GameObject("Leben.png");
     }
 
     /**
@@ -225,7 +217,6 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
         drawAll(g2d, data);
         drawPacMan(g2d, xPos, yPos);
         for(int i = 0; i < ghostCount; i++){
-            //drawGhosts(g2d, ghostsX[i], ghostsY[i]);
             ghost.drawObject(g2d, ghostsX[i], ghostsY[i], this);
         }
     }
@@ -238,10 +229,11 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
             for(int j = 0; j < arr[0].length; j++){
                 switch (arr[i][j]){
                     case 'h':
-                        drawWall(g, j * 30, i * 30);
+                        wall.drawObject(g, j * 30, i * 30, this);
+                        //drawWall(g, j * 30, i * 30);
                         break;
                     case '*':
-                        drawCoin(g, j * 30, i * 30);
+                        coin.drawObject(g, j * 30, i * 30, this);
                         break;
                     case 'g':
                         if(startPositions) {
@@ -258,52 +250,24 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
                             xPos = j * 30;
                             yPos = i * 30;
                         }
-                        drawFloor(g, j * 30, i * 30);
+                        floor.drawObject(g, j * 30, i * 30, this);
                         break;
                     case 'x':
-                        drawDoor(g, j * 30, i * 30);
+                        door.drawObject(g, j * 30, i * 30, this);
                         break;
                     case 'k':
-                        drawKey(g, j * 30, i * 30);
+                        key.drawObject(g, j * 30, i * 30, this);
                         break;
                     case '.':
-                        drawFloor(g, j * 30, i *30);
+                        floor.drawObject(g, j * 30, i *30, this);
                         break;
                     default:
-                        drawItem(g, j * 30, i * 30);
+                        item.drawObject(g, j * 30, i * 30, this);
                         break;
                 }
             }
         }
     }
-
-    private void drawKey(Graphics g, int x, int y){
-        g.drawImage(key, x, y, this);
-    }
-
-    private void drawDoor(Graphics2D g, int x, int y){
-        g.drawImage(door, x, y, this);
-    }
-
-    private void drawFloor(Graphics2D g, int x, int y){
-        g.drawImage(floor, x, y, this);
-    }
-
-    private void drawWall(Graphics2D g, int x, int y){
-        g.drawImage(wall, x, y, this);
-    }
-
-    private void drawItem(Graphics2D g, int x, int y){
-        g.drawImage(item, x, y, this);
-    }
-
-    private void drawCoin(Graphics2D g, int x, int y){
-        g.drawImage(coin, x, y, this);
-    }
-
-    //private void drawGhosts(Graphics2D g2d, int x, int y){
-    //    g2d.drawImage(ghost, x, y, this);
-    //}
 
     private void drawPacMan(Graphics2D g2d, int x, int y){
         g2d.setPaint(Color.yellow);
@@ -319,7 +283,7 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
         g2d.setFont(new Font("Arial", Font.BOLD, 20));
         g2d.drawString("Score: " + score, panelHeight / 2 + 10, panelHeight + 40);
         for(int i = 0; i < lives; i++){
-            g2d.drawImage(life, (i * 30) + (30 * i),panelHeight + 10, this);
+            life.drawObject(g2d, (i * 30) + (30 * i),panelHeight + 10, this);
         }
     }
 
@@ -439,27 +403,4 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
             }
         }
     }
-
-    public void swap(char[][]arr, int i, int j, int k, int l){
-        try{
-            char tmp = arr[i][j];
-            arr[i][j] = arr[k][l];
-            arr[k][l] = tmp;
-        }catch(ArrayIndexOutOfBoundsException e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public InputStream getFileResourcesAsStream(String filename){
-        ClassLoader cl = getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream(filename);
-        if(in == null){
-            throw new IllegalArgumentException("File not found: " + filename);
-        }
-        else{
-            return in;
-        }
-    }
-
 }

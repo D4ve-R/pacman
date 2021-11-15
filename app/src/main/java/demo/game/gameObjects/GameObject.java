@@ -6,18 +6,17 @@ import java.awt.*;
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
 import java.awt.image.ImageObserver;
-import java.io.InputStream;
 
 /**
- *
+ * GameObject class handles resources
  */
-public abstract class GameObject implements ResourceHandler {
+public class GameObject implements ResourceHandler {
     private String uriPrefix = "images";
     private String uri;
     private Image img;
 
     /**
-     *
+     * Constructor for GameObject Class
      * @param uri
      */
     public GameObject(String uri){
@@ -25,7 +24,8 @@ public abstract class GameObject implements ResourceHandler {
     }
 
     /**
-     *
+     * loadImage() calls getFileResourcesAsStream()
+     * and loads the image from uriPrefix + uri
      * @param uri
      */
     private void loadImage(String uri){
@@ -35,26 +35,13 @@ public abstract class GameObject implements ResourceHandler {
     }
 
     /**
-     *
-     * @param g
-     * @param x
-     * @param y
+     * drawObject() draws Object on Graphics Object g
+     * @param g Graphics Object to be drawn on
+     * @param x position of top left corner
+     * @param y position of top left corner
      * @param imageObserver
      */
     public void drawObject(Graphics2D g, int x, int y, ImageObserver imageObserver){
         g.drawImage(img, x, y, imageObserver);
     }
-
-    @Override
-    public InputStream getFileResourcesAsStream(String filename){
-        ClassLoader cl = getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream(filename);
-        if(in == null){
-            throw new IllegalArgumentException("File not found: " + filename);
-        }
-        else{
-            return in;
-        }
-    }
-
 }
