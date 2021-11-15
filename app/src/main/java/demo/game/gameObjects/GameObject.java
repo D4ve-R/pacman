@@ -1,4 +1,4 @@
-package demo.game;
+package demo.game.gameObjects;
 
 import demo.utils.ResourceHandler;
 
@@ -8,19 +8,39 @@ import javax.imageio.ImageIO;
 import java.awt.image.ImageObserver;
 import java.io.InputStream;
 
-public class GameObject implements ResourceHandler {
+/**
+ *
+ */
+public abstract class GameObject implements ResourceHandler {
+    private String uriPrefix = "images";
+    private String uri;
     private Image img;
 
+    /**
+     *
+     * @param uri
+     */
     public GameObject(String uri){
-        loadImage(uri);
+        loadImage(uriPrefix + "/" + uri);
     }
 
+    /**
+     *
+     * @param uri
+     */
     private void loadImage(String uri){
         try {
             img = new ImageIcon(ImageIO.read(getFileResourcesAsStream(uri))).getImage();
         } catch(Exception e) { e.printStackTrace();}
     }
 
+    /**
+     *
+     * @param g
+     * @param x
+     * @param y
+     * @param imageObserver
+     */
     public void drawObject(Graphics2D g, int x, int y, ImageObserver imageObserver){
         g.drawImage(img, x, y, imageObserver);
     }

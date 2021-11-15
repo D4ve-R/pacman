@@ -4,10 +4,6 @@
  */
 package demo.game;
 
-import demo.utils.ResourceHandler;
-import demo.utils.SoundPlayer;
-import demo.menus.PauseMenu;
-
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Color;
@@ -19,6 +15,12 @@ import java.io.*;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
+
+import demo.game.gameObjects.GameObject;
+import demo.game.gameObjects.Enemy;
+import demo.utils.ResourceHandler;
+import demo.utils.SoundPlayer;
+import demo.menus.PauseMenu;
 
 /**
  * The Game Class handles all the logic, input and output
@@ -36,7 +38,8 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
     private int speed = 30;
     public int score;
 
-    private Image ghost;
+    private GameObject ghost;
+    //private Image ghost;
     private Image item;
     private Image wall;
     private Image floor;
@@ -79,7 +82,8 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
      */
     private void loadImages() {
         try {
-            ghost = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Gegner.png"))).getImage();
+            ghost = new Enemy();
+            //ghost = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Gegner.png"))).getImage();
             item = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Item.png"))).getImage();
             wall = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Wand.png"))).getImage();
             floor = new ImageIcon(ImageIO.read(getFileResourcesAsStream("images/Boden.png"))).getImage();
@@ -182,7 +186,6 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            System.out.println("Loop still running");
 
             while (running) {
                 long now = System.nanoTime();
@@ -193,6 +196,7 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
                     update();
                 frames++;
 
+                // prints out framerate to terminal
                 if (System.currentTimeMillis() - timer > 1000) {
                     timer += 1000;
                     System.out.println("fps: " + frames);
@@ -221,7 +225,8 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
         drawAll(g2d, data);
         drawPacMan(g2d, xPos, yPos);
         for(int i = 0; i < ghostCount; i++){
-            drawGhosts(g2d, ghostsX[i], ghostsY[i]);
+            //drawGhosts(g2d, ghostsX[i], ghostsY[i]);
+            ghost.drawObject(g2d, ghostsX[i], ghostsY[i], this);
         }
     }
 
@@ -240,7 +245,8 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
                         break;
                     case 'g':
                         if(startPositions) {
-                            drawGhosts(g, j * 30, i * 30);
+                            ghost.drawObject(g, ghostsX[i], ghostsY[i], this);
+                            //drawGhosts(g, j * 30, i * 30);
                             ghostsX[ghostCount] = j * 30;
                             ghostsY[ghostCount] = i * 30;
                             ghostCount++;
@@ -295,9 +301,9 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
         g.drawImage(coin, x, y, this);
     }
 
-    private void drawGhosts(Graphics2D g2d, int x, int y){
-        g2d.drawImage(ghost, x, y, this);
-    }
+    //private void drawGhosts(Graphics2D g2d, int x, int y){
+    //    g2d.drawImage(ghost, x, y, this);
+    //}
 
     private void drawPacMan(Graphics2D g2d, int x, int y){
         g2d.setPaint(Color.yellow);

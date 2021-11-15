@@ -15,7 +15,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
 public class ScoreBoard extends JPanel implements ActionListener, ResourceHandler {
     private JButton backBtn = new JButton("zurück");
     private JLabel label = new JLabel("HighScores :");
