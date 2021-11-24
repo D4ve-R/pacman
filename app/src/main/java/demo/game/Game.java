@@ -94,8 +94,8 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
     private void initVars(){
         dx = 30;
         dy = 30;
-        xPos = panelWidth/(2 - (dx/2));
-        yPos = panelHeight/(2 - (dy/2));
+        xPos = panelWidth/2 - dx;
+        yPos = panelHeight/2 - dy;
 
         ghostsX = new int[10];
         ghostsY = new int[10];
@@ -153,8 +153,8 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
     private void stop(){
         try{
             loop = false;
-            System.out.println("\u274c" + " Thread with ID: " + thread.getId() + " stopped!");
             thread.join();
+            System.out.println("\u274c" + " Thread with ID: " + thread.getId() + " stopped!");
         }catch(InterruptedException e){
             e.printStackTrace();
         }
@@ -166,34 +166,20 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
      */
     @Override
     public void run(){
-        long lastTime = System.nanoTime();
-        double amountOfTicks = 60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
         long timer = System.currentTimeMillis();
         int frames = 0 ;
         while(loop) {
-            try {
-                thread.sleep(150);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+            startPositions = false;
             while (running) {
-                long now = System.nanoTime();
-                delta += (now - lastTime) / ns;
-                lastTime = now;
-                if (running)
-                    startPositions = false;
-                    update();
+                update();
                 frames++;
 
                 // prints out framerate to terminal
                 if (System.currentTimeMillis() - timer > 1000) {
-                    timer += 1000;
                     System.out.println("fps: " + frames);
-                    frames = 0;
                     bite = !bite;     //toggle
+                    frames = 0;
+                    timer = System.currentTimeMillis();
                 }
 
                 try {
@@ -203,7 +189,6 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
                 }
             }
         }
-        stop();
     }
 
     /**
@@ -237,20 +222,18 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
                         break;
                     case 'g':
                         if(startPositions) {
-                            ghost.drawObject(g, ghostsX[i], ghostsY[i], this);
-                            //drawGhosts(g, j * 30, i * 30);
                             ghostsX[ghostCount] = j * 30;
                             ghostsY[ghostCount] = i * 30;
-                            ghostCount++;
                         }
+                        ghost.drawObject(g, ghostsX[ghostCount], ghostsY[ghostCount], this);
                         break;
                     case 'p':
                         if(startPositions) {
-                            drawPacMan(g, j * 30, i * 30);
                             xPos = j * 30;
                             yPos = i * 30;
                         }
                         floor.drawObject(g, j * 30, i * 30, this);
+                        drawPacMan(g, xPos, yPos);
                         break;
                     case 'x':
                         door.drawObject(g, j * 30, i * 30, this);
@@ -303,28 +286,23 @@ public class Game extends JPanel implements Runnable, ResourceHandler {
      * checks for collision between pacman and ghosts
      */
     private void checkCollision(){
-        SoundPlayer effect = new SoundPlayer("sound/pacman_chomp.wav", false);
 
         // detect collision with item
         if(data[yPos/30][xPos/30] == '*'){
             data[yPos/30][xPos/30] = '.';
             score += 10;
-            effect.play();
         }
         else if(data[yPos/30][(xPos + dx - 1)/30] == '*'){
             data[yPos/30][(xPos + dx)/30] = '.';
             score += 10;
-            effect.play();
         }
         else if(data[(yPos + dy - 1)/30][xPos/30] == '*'){
             data[(yPos + dy)/30][xPos/30] = '.';
             score += 10;
-            effect.play();
         }
         else if(data[(yPos + dy - 1)/30][(xPos + dx - 1)/30] == '*'){
             data[(yPos +dy)/30][(xPos + dx)/30] = '.';
             score += 10;
-            effect.play();
         }
 
         // check collision with ghosts
